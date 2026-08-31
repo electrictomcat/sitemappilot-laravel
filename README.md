@@ -11,39 +11,12 @@ anyone opening a dashboard.
 - **License:** MIT — see [LICENSE](LICENSE)
 - **Changes:** [CHANGELOG.md](CHANGELOG.md)
 
-> ### Release status
->
-> **Not on Packagist yet.** `composer require sitemappilot/laravel` does not
-> resolve today: `repo.packagist.org/p2/sitemappilot/laravel.json` answers 404.
-> The source repository and its `v1.0.0` tag do exist, so Composer can install
-> it from VCS in the meantime — see below. This block comes out when the
-> package is published; [PUBLISHING.md](PUBLISHING.md) is the order of
-> operations for getting it there.
-
 ---
 
 ## Installation
 
-Once the package is on Packagist:
-
 ```bash
 composer require sitemappilot/laravel
-```
-
-Until then, install it from the source repository:
-
-```jsonc
-// composer.json
-"repositories": [
-    { "type": "vcs", "url": "https://github.com/electrictomcat/sitemappilot-laravel" }
-],
-"require": {
-    "sitemappilot/laravel": "^1.0"
-}
-```
-
-```bash
-composer update sitemappilot/laravel
 ```
 
 The service provider and the `SitemapPilot` alias are registered by package
