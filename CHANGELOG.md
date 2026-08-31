@@ -7,6 +7,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 Nothing yet.
 
+## [1.0.2] - 2026-08-31
+
+### Fixed
+
+- A changelog entry named the wrong repository URL while describing the link
+  it was fixing, which is itself a link to a repository that does not exist.
+
 ## [1.0.1] - 2026-08-31
 
 ### Fixed
@@ -21,8 +28,8 @@ Nothing yet.
     could never pass. Split into a data provider.
   - `test_missing_configuration_raises_before_any_request` could not see a
     missing key, because the test case set one for every test.
-- `CHANGELOG.md` linked to `github.com/sitemappilot/laravel`, which is not this
-  package's source repository.
+- `CHANGELOG.md` linked to a repository under the wrong GitHub organisation
+  rather than this package's declared source.
 
 ## [1.0.0] - 2026-08-31
 
