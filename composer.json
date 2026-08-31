@@ -1,0 +1,66 @@
+{
+    "name": "sitemappilot/laravel",
+    "description": "Official Laravel SDK for SitemapPilot — Automated Google Search Console, Bing, and IndexNow delivery.",
+    "keywords": [
+        "laravel",
+        "sitemap",
+        "google-search-console",
+        "indexnow",
+        "seo",
+        "bing"
+    ],
+    "type": "library",
+    "homepage": "https://sitemappilot.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "SitemapPilot",
+            "email": "support@sitemappilot.com",
+            "homepage": "https://sitemappilot.com",
+            "role": "Maintainer"
+        }
+    ],
+    "support": {
+        "docs": "https://sitemappilot.com/docs/api-reference",
+        "email": "support@sitemappilot.com",
+        "issues": "https://github.com/electrictomcat/sitemappilot-laravel/issues",
+        "source": "https://github.com/electrictomcat/sitemappilot-laravel"
+    },
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
+        "illuminate/http": "^10.0|^11.0|^12.0|^13.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0|^9.0|^10.0|^11.0",
+        "phpunit/phpunit": "^10.5|^11.5|^12.0|^13.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "SitemapPilot\\Laravel\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SitemapPilot\\Laravel\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "SitemapPilot\\Laravel\\SitemapPilotServiceProvider"
+            ],
+            "aliases": {
+                "SitemapPilot": "SitemapPilot\\Laravel\\Facades\\SitemapPilot"
+            }
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
