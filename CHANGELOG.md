@@ -10,7 +10,10 @@ Nothing yet.
 ## [1.0.0] - unreleased
 
 First public release. Everything below describes the package as it stands at
-the point of its first Packagist tag.
+the point of its first Packagist tag. The `v1.0.0` tag exists on the source
+repository but the package is not on Packagist yet, so this entry stays
+"unreleased" until it is; [PUBLISHING.md](PUBLISHING.md) is the order of
+operations for getting there.
 
 ### Added
 
@@ -33,5 +36,5 @@ the point of its first Packagist tag.
 - A Testbench test suite (`composer test`) that fakes the HTTP layer, so it
   needs neither network access nor a SitemapPilot account.
 
-[Unreleased]: https://github.com/sitemappilot/laravel/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/sitemappilot/laravel/releases/tag/v1.0.0
+[Unreleased]: https://github.com/electrictomcat/sitemappilot-laravel/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/electrictomcat/sitemappilot-laravel/releases/tag/v1.0.0

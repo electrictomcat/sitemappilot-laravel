@@ -5,6 +5,7 @@ namespace SitemapPilot\Laravel\Tests;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use PHPUnit\Framework\Attributes\DataProvider;
 use SitemapPilot\Laravel\Exceptions\AuthenticationException;
 use SitemapPilot\Laravel\Exceptions\AuthorizationException;
 use SitemapPilot\Laravel\Exceptions\ConfigurationException;
@@ -92,13 +93,43 @@ class SitemapPilotClientTest extends TestCase
         }
     }
 
-    public function test_401_and_403_raise_distinct_exceptions(): void
+    /**
+     * @return array<string, array{0: int, 1: class-string}>
+     */
+    public static function refusalProvider(): array
     {
-        Http::fake([self::BASE.'/*' => Http::response(['message' => 'Invalid or revoked API token.'], 401)]);
-        $this->assertThrows(fn () => $this->client()->status(), AuthenticationException::class);
+        return [
+            '401 the token is wrong' => [401, AuthenticationException::class],
+            '403 the token belongs to another workspace' => [403, AuthorizationException::class],
+        ];
+    }
 
-        Http::fake([self::BASE.'/*' => Http::response(['message' => 'No access to this property.'], 403)]);
-        $this->assertThrows(fn () => $this->client()->status(), AuthorizationException::class);
+    /**
+     * One status per test case, deliberately.
+     *
+     * This was one method that faked a 401, asserted, then faked a 403 and
+     * asserted again - and the second half could never pass. Factory::fake()
+     * MERGES its stubs into the ones already registered rather than replacing
+     * them (Illuminate\Http\Client\Factory::fake -> stubUrl), and the first
+     * stub whose pattern matches answers. Both faked the same
+     * `BASE/*` pattern, so the 401 kept answering and the 403 case asserted
+     * against a 401 response. A data provider gives each status a fresh
+     * application, and a fresh factory with it.
+     *
+     * @param  class-string  $expected
+     */
+    #[DataProvider('refusalProvider')]
+    public function test_each_api_refusal_raises_its_own_exception(int $status, string $expected): void
+    {
+        Http::fake([self::BASE.'/*' => Http::response(['message' => 'nope'], $status)]);
+
+        try {
+            $this->client()->status();
+            $this->fail("A {$status} must raise.");
+        } catch (SitemapPilotException $e) {
+            $this->assertInstanceOf($expected, $e);
+            $this->assertSame($status, $e->status());
+        }
     }
 
     public function test_every_failure_is_catchable_as_one_type(): void
@@ -121,9 +152,20 @@ class SitemapPilotClientTest extends TestCase
         }
     }
 
+    /**
+     * A null argument is NOT the unconfigured case: the constructor falls
+     * back to config for everything it is not given, and TestCase's
+     * environment configures a key. So this asserted a raise it could not
+     * see - the client was fully configured and sent the request instead,
+     * which is why the package's own suite failed the first time it was run.
+     * The config is emptied here, which is what a consumer's application
+     * looks like before SITEMAPPILOT_API_KEY reaches its .env.
+     */
     public function test_missing_configuration_raises_before_any_request(): void
     {
         Http::fake();
+
+        config(['sitemappilot.api_key' => null, 'sitemappilot.property_id' => null]);
 
         $this->assertThrows(
             fn () => (new SitemapPilotClient(null, 42, self::BASE))->generate(),
@@ -131,11 +173,34 @@ class SitemapPilotClientTest extends TestCase
         );
 
         $this->assertThrows(
-            fn () => (new SitemapPilotClient('sp_live_testing_token', 0, self::BASE))->generate(),
+            fn () => (new SitemapPilotClient('sp_live_testing_token', null, self::BASE))->submit(),
+            ConfigurationException::class,
+        );
+
+        $this->assertThrows(
+            fn () => (new SitemapPilotClient('sp_live_testing_token', 0, self::BASE))->status(),
             ConfigurationException::class,
         );
 
         Http::assertNothingSent();
+    }
+
+    /**
+     * The other side of the fallback the test above has to work around, and
+     * the reason it is not simply deleted: an application that configures the
+     * package in .env and then resolves the client with no arguments has to
+     * reach its own property with its own token.
+     */
+    public function test_a_client_given_nothing_uses_the_configured_key_and_property(): void
+    {
+        Http::fake([self::BASE.'/*' => Http::response([], 200)]);
+
+        (new SitemapPilotClient)->status();
+
+        Http::assertSent(function (Request $request): bool {
+            return $request->hasHeader('Authorization', 'Bearer sp_live_testing_token')
+                && str_ends_with($request->url(), '/properties/42/status');
+        });
     }
 
     public function test_property_override_changes_only_the_clone(): void

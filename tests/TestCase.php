@@ -15,6 +15,14 @@ abstract class TestCase extends Orchestra
         return [SitemapPilotServiceProvider::class];
     }
 
+    /**
+     * The configured environment a consumer's application would have.
+     *
+     * SitemapPilotClient falls back to these values for every constructor
+     * argument it is not given, so a test about MISSING configuration cannot
+     * express itself by passing null - it has to empty the config first. See
+     * SitemapPilotClientTest::test_missing_configuration_raises_before_any_request.
+     */
     protected function defineEnvironment($app): void
     {
         $app['config']->set('sitemappilot.api_key', 'sp_live_testing_token');

@@ -13,10 +13,12 @@ anyone opening a dashboard.
 
 > ### Release status
 >
-> **First release pending.** This package is not on Packagist yet, so
-> `composer require sitemappilot/laravel` does not resolve today — use the path
-> repository below until the first tag is published. This block is removed in
-> the commit that tags `v1.0.0`.
+> **Not on Packagist yet.** `composer require sitemappilot/laravel` does not
+> resolve today: `repo.packagist.org/p2/sitemappilot/laravel.json` answers 404.
+> The source repository and its `v1.0.0` tag do exist, so Composer can install
+> it from VCS in the meantime — see below. This block comes out when the
+> package is published; [PUBLISHING.md](PUBLISHING.md) is the order of
+> operations for getting it there.
 
 ---
 
@@ -28,16 +30,20 @@ Once the package is on Packagist:
 composer require sitemappilot/laravel
 ```
 
-Until then, point Composer at a local checkout:
+Until then, install it from the source repository:
 
 ```jsonc
 // composer.json
 "repositories": [
-    { "type": "path", "url": "../sitemappilot-laravel" }
+    { "type": "vcs", "url": "https://github.com/electrictomcat/sitemappilot-laravel" }
 ],
 "require": {
-    "sitemappilot/laravel": "*"
+    "sitemappilot/laravel": "^1.0"
 }
+```
+
+```bash
+composer update sitemappilot/laravel
 ```
 
 The service provider and the `SitemapPilot` alias are registered by package
@@ -264,7 +270,11 @@ composer test
 ```
 
 The suite runs on [Orchestra Testbench](https://github.com/orchestral/testbench)
-and fakes the HTTP layer; no network and no SitemapPilot account are needed.
+and fakes the HTTP layer; no network and no SitemapPilot account are needed. It
+is the gate on a release tag, so it has to be green on a clean checkout, not
+just on yours.
+
+Releasing is [PUBLISHING.md](PUBLISHING.md).
 
 ---
 
